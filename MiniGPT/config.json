@@ -1,0 +1,26 @@
+{
+  "architectures": [
+    "GPT2LMHeadModel"
+  ],
+  "model_type": "gpt2",
+  "max_position_embeddings": 256,
+  "vocab_size": 50257,
+  "n_positions": 256,
+  "n_ctx": 256,
+  "n_embd": 256,
+  "n_layer": 4,
+  "n_head": 8,
+  "n_inner": 256,
+  "activation_function": "relu",
+  "resid_pdrop": 0.1,
+  "embd_pdrop": 0.1,
+  "attn_pdrop": 0.1,
+  "layer_norm_epsilon": 1e-6,
+  "initializer_range": 0.02,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "tie_word_embeddings": false
+}
