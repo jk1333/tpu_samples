@@ -51,6 +51,7 @@ echo "----------------------------------------------------------------"
 gcloud services enable tpu.googleapis.com \
     notebooks.googleapis.com \
     compute.googleapis.com \
+    aiplatform.googleapis.com \
     iam.googleapis.com
 
 # Default Compute Engine Service Account 가져오기
