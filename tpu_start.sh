@@ -20,6 +20,13 @@ WB_NAME="my-workbench-g2"
 WB_ZONE="us-central1-a"
 WB_MACHINE_TYPE="g2-standard-4" # NVIDIA L4 1장이 포함된 머신 타입
 
+# GKE 설정 (vLLM용)
+GKE_CLUSTER_NAME="vllm-cluster"
+GKE_ZONE="us-central1-a"
+GKE_MACHINE_TYPE="g2-standard-16"
+GKE_ACCELERATOR="type=nvidia-l4,count=1,gpu-driver-version=LATEST"
+GKE_NUM_NODES=1
+
 # V6e 시도할 리전 목록
 REGIONS_V6E=(
     "us-central1-b"
@@ -47,12 +54,13 @@ echo "----------------------------------------------------------------"
 echo "Enabling APIs and Setting Permissions..."
 echo "----------------------------------------------------------------"
 
-# API 활성화
+# API 활성화 (GKE용 container.googleapis.com 추가)
 gcloud services enable tpu.googleapis.com \
     notebooks.googleapis.com \
     compute.googleapis.com \
     aiplatform.googleapis.com \
-    iam.googleapis.com
+    iam.googleapis.com \
+    container.googleapis.com
 
 # Default Compute Engine Service Account 가져오기
 DEFAULT_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
@@ -161,7 +169,7 @@ echo "----------------------------------------------------------------"
 gcloud workbench instances describe $WB_NAME --location=$WB_ZONE --project=$PROJECT_ID >/dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    echo "Workbench '$WB_NAME' already exists. Skipping creation."
+    echo "ℹ️  Workbench '$WB_NAME' already exists. Skipping creation."
 else
     # [수정] --boot-disk-type 옵션 추가 (G2 인스턴스 필수)
     gcloud workbench instances create $WB_NAME \
@@ -184,7 +192,34 @@ else
 fi
 
 # ==============================================================================
-# 4. 방화벽 규칙 및 마무리
+# 4. GKE 클러스터 생성 (vLLM)
+# ==============================================================================
+echo "----------------------------------------------------------------"
+echo "Creating GKE Cluster ($GKE_CLUSTER_NAME)..."
+echo "----------------------------------------------------------------"
+
+# 클러스터 존재 여부 확인
+if gcloud container clusters describe $GKE_CLUSTER_NAME --zone=$GKE_ZONE --project=$PROJECT_ID >/dev/null 2>&1; then
+    echo "ℹ️  GKE Cluster '$GKE_CLUSTER_NAME' already exists. Skipping creation."
+else
+    gcloud container clusters create $GKE_CLUSTER_NAME \
+        --project=$PROJECT_ID \
+        --zone=$GKE_ZONE \
+        --machine-type=$GKE_MACHINE_TYPE \
+        --accelerator=$GKE_ACCELERATOR \
+        --num-nodes=$GKE_NUM_NODES \
+        --quiet
+
+    if [ $? -eq 0 ]; then
+        echo "✅ SUCCESS: GKE Cluster '$GKE_CLUSTER_NAME' created."
+    else
+        echo "❌ FAILED: Failed to create GKE Cluster."
+        exit 1
+    fi
+fi
+
+# ==============================================================================
+# 5. 방화벽 규칙 및 마무리
 # ==============================================================================
 echo "----------------------------------------------------------------"
 echo "Finalizing Network Settings..."
@@ -201,4 +236,4 @@ if [ $? -ne 0 ]; then
         --source-ranges=0.0.0.0/0
 fi
 
-echo "🎉 All Done! TPU and Workbench setup complete."
+echo "🎉 All Done! TPU, Workbench, and GKE setup complete."
