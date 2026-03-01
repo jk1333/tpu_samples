@@ -22,7 +22,7 @@ module "cli" {
   additional_components = ["kubectl", "beta"]
 
   create_cmd_entrypoint    = "chmod +x ${path.module}/start.sh;bash ${path.module}/start.sh"
-  create_cmd_body          = "${var.gcp_project_id} ${var.gcp_region} ${var.gcp_zone}"
+  create_cmd_body          = "${var.gcp_project_id}"
   skip_download            = false
   upgrade                  = false
   gcloud_sdk_version       = "558.0.0"

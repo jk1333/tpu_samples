@@ -16,9 +16,6 @@
 
 # Environment Variables
 PROJECT_ID=$1
-REGION=$2
-ZONE=$3
-
 
 # Set the Platform Project
 gcloud config set project $PROJECT_ID
