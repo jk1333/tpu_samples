@@ -102,7 +102,7 @@ cd gke
 
 구성이 완료되면 Grafana 대시보드 URL 이 출력됩니다.
 
-이 URL 로 진입 후 admin/admin 으로 로그인 후 Dashboard -> vLLM 메뉴로 예제 대시보드로 이동합니다.
+이 URL 로 진입 후, admin/admin 으로 로그인, Dashboard -> vLLM 메뉴로 예제 대시보드로 이동합니다.
 
 아래의 명령어를 실행하여 샘플 트래픽을 vLLM 으로 주입, Dashboard 상에 vLLM 의 트래픽 처리 상태를 확인합니다.
 
